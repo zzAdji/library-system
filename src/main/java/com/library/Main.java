@@ -2,6 +2,6 @@ package com.library;
 
 public class Main {
     public static void main(String[] args) {
-        System.out.println("Library System - Console bootstrap");
+        System.out.println("Library System Management - Start");
     }
 }
