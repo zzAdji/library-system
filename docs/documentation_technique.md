@@ -200,7 +200,7 @@ Convention : chaque membre travaille sur sa branche `feature/*`, puis ouvre une 
 
 **Methodes minimales attendues (signatures cibles) :**
 - `AuthService` : `login(String login, String password)`, `logout()`, `getCurrentUser()`
-- `BookService` : `addBook(Book book)`, `updateBook(Book book)`, `deleteBook(String isbn)`, `findByIsbn(String isbn)`, `search(String keyword)`, `getAllBooks()`
+- `BookService` : `addBook(Book book)`, `updateBook(Book book)`, `deleteBook(String isbn)`, `findByIsbn(String isbn)`, `findByCategory(String category)`, `search(String keyword)`, `getAllBooks()`
 - `UserService` : `createUser(User user)`, `updateUser(User user)`, `deactivateUser(String userId)`, `findById(String userId)`, `getAllUsers()`
 - `LoanService` : `borrowBook(String userId, String isbn)`, `returnBook(String loanId)`, `extendLoan(String loanId, int extraDays)`, `getLoansByUser(String userId)`, `getActiveLoans()`
 - `StatisticsService` : `countAvailableBooks()`, `countBorrowedBooks()`, `topBorrowedBooks(int limit)`, `overdueLoans()`
@@ -215,23 +215,26 @@ Convention : chaque membre travaille sur sa branche `feature/*`, puis ouvre une 
 **Objectif :** fournir la couche `model` et la persistance JSON via `repository`.
 
 **Fichiers a creer/modifier :**
+- `src/main/java/com/library/model/User.java`, `Role.java`, `UserStatus.java`
 - `src/main/java/com/library/model/Book.java`
-- `src/main/java/com/library/model/User.java`
-- `src/main/java/com/library/model/Loan.java`
-- `src/main/java/com/library/model/Role.java`
-- `src/main/java/com/library/repository/BookRepository.java`
+- `src/main/java/com/library/model/Loan.java`, `LoanStatus.java`
+- `src/main/java/com/library/model/HoldRequest.java`, `HoldStatus.java`
 - `src/main/java/com/library/repository/UserRepository.java`
+- `src/main/java/com/library/repository/BookRepository.java`
 - `src/main/java/com/library/repository/LoanRepository.java`
-- `src/main/java/com/library/repository/impl/JsonBookRepository.java`
+- `src/main/java/com/library/repository/HoldRequestRepository.java`
 - `src/main/java/com/library/repository/impl/JsonUserRepository.java`
+- `src/main/java/com/library/repository/impl/JsonBookRepository.java`
 - `src/main/java/com/library/repository/impl/JsonLoanRepository.java`
+- `src/main/java/com/library/repository/impl/JsonHoldRequestRepository.java`
 - `src/main/java/com/library/config/JsonConfig.java`
-- `data/books.json`, `data/users.json`, `data/loans.json` (schema stable)
+- `data/users.json`, `data/books.json`, `data/loans.json`, `data/holdrequests.json`
 
 **Methodes minimales attendues (signatures cibles) :**
-- `BookRepository` : `findAll()`, `findByIsbn(String isbn)`, `save(Book book)`, `update(Book book)`, `deleteByIsbn(String isbn)`
-- `UserRepository` : `findAll()`, `findById(String id)`, `findByLogin(String login)`, `save(User user)`, `update(User user)`, `deleteById(String id)`
-- `LoanRepository` : `findAll()`, `findById(String id)`, `findActiveByUser(String userId)`, `save(Loan loan)`, `update(Loan loan)`, `deleteById(String id)`
+- `UserRepository` : `findAll()`, `findById(String id)`, `findByCardNumber(String cardNumber)`, `findByEmail(String email)`, `save(User user)`, `update(User user)`, `deleteById(String id)`
+- `BookRepository` : `findAll()`, `findByIsbn(String isbn)`, `findByCategory(String category)`, `search(String keyword)`, `save(Book book)`, `update(Book book)`, `deleteByIsbn(String isbn)`
+- `LoanRepository` : `findAll()`, `findById(String id)`, `findByUserId(String userId)`, `findOverdueLoans()`, `save(Loan loan)`, `update(Loan loan)`, `deleteById(String id)`
+- `HoldRequestRepository` : `findAll()`, `findById(String id)`, `findByBookIsbn(String bookIsbn)`, `findByUserId(String userId)`, `save(...)`, `update(...)`, `deleteById(...)`
 - Repositories JSON : `loadData()`, `writeData(List<T> data)` (privates internes)
 
 **Livrables de validation :**

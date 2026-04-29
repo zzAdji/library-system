@@ -1,13 +1,1 @@
-com\library\service\AuthService.class
-com\library\config\AppConfig.class
-com\library\service\StatisticsService.class
-com\library\ui\gui\package-info.class
-com\library\repository\package-info.class
-com\library\config\package-info.class
-com\library\service\BookService.class
-com\library\service\UserService.class
 com\library\Main.class
-com\library\service\LoanService.class
-com\library\ui\console\package-info.class
-com\library\model\package-info.class
-com\library\service\package-info.class

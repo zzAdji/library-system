@@ -1,20 +1,43 @@
 package com.library.service;
 
+import com.library.model.User;
+import com.library.repository.UserRepository;
+
 import java.util.Optional;
 
 // Les services d'Authentification
 
 public class AuthService {
+    private final UserRepository userRepository;
+    private User currentUser;
 
-    public Optional<Object> login(String login, String password) {
-        throw new UnsupportedOperationException("Not implemented yet.");
+    public AuthService(UserRepository userRepository) {
+        this.userRepository = userRepository;
+        this.currentUser = null;
     }
+
+    public Optional<User> login(String login, String password) {
+        Optional<User> optionalUser = userRepository.findByCardNumber(login);
+    
+        if (optionalUser.isPresent()) {
+            User user = optionalUser.get();
+        
+            if (user.getPassword().equals(password)) {
+                this.currentUser = user;
+            
+                return Optional.of(user); 
+            }
+        }
+
+        return Optional.empty();
+    }
+
 
     public void logout() {
-        throw new UnsupportedOperationException("Not implemented yet.");
+        currentUser = null;
     }
 
-    public Optional<Object> getCurrentUser() {
-        throw new UnsupportedOperationException("Not implemented yet.");
+    public Optional<User> getCurrentUser() {
+        return Optional.ofNullable(this.currentUser); // Retourne une empty si currentUser = null
     }
 }
