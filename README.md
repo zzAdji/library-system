@@ -121,4 +121,8 @@ java -jar target/library-system-1.0.0.jar
 - Réutiliser `service` et `repository` existants sans les modifier en profondeur.
 - Maintenir la même persistance JSON.
 - Préparer une navigation GUI (liste des livres, utilisateurs, prêts, retours).
+
+
+## (Steve_Jorel) pour l'execution la commande est 
+mvn exec:java "-Dexec.mainClass=com.library.Main"
 ```
