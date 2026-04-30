@@ -1,1 +1,10 @@
-[]
+[ {
+  "isbn" : "steve",
+  "title" : "major en francais",
+  "author" : "steve",
+  "publisher" : "steve",
+  "publishYear" : 2013,
+  "category" : "",
+  "totalCopies" : 25,
+  "availableCopies" : 25
+} ]
