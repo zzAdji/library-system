@@ -49,17 +49,23 @@ public class JsonLoanRepository implements LoanRepository {
 
     @Override
     public Optional<Loan> findById(String id) {
-        return loadData().stream().filter(l -> l.getId().equals(id)).findFirst();
+        return loadData().stream()
+                .filter(l -> l.getId().equals(id))
+                .findFirst();
     }
 
     @Override
     public List<Loan> findByUserId(String userId) {
-        return loadData().stream().filter(l -> l.getUserId().equals(userId)).collect(Collectors.toList());
+        return loadData().stream()
+                .filter(l -> l.getUserId().equals(userId))
+                .collect(Collectors.toList());
     }
 
     @Override
     public List<Loan> findOverdueLoans() {
-        return loadData().stream().filter(l -> l.getStatus() == LoanStatus.OVERDUE).collect(Collectors.toList());
+        return loadData().stream()
+                .filter(l -> l.getStatus() == LoanStatus.OVERDUE)
+                .collect(Collectors.toList());
     }
 
     @Override
