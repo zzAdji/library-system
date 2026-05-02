@@ -3,8 +3,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.file.attribute.UserDefinedFileAttributeView;
-
-
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -12,6 +11,7 @@ import java.util.Scanner;
 import java.util.zip.InflaterInputStream;
 
 import com.library.model.User;
+import com.library.model.UserStatus;
 
 public class UserConsole {
     public  static ArrayList <User> users = new ArrayList<User>();
@@ -21,10 +21,19 @@ public class UserConsole {
                users.add(user);
 
     }
-    public static void update (User user){
-        
-        
+    public static  void  update(User user ,String id, String cardNumber, String password, String firstName, String lastName, String email, String phone, Role role, UserStatus status, LocalDate registrationDate) {
+        user.setId(id);
+        user.setCardNumber(cardNumber);
+        user.setPassword(password);
+        user.setFirstName(firstName);
+        user.setLastName(lastName);
+        user.setEmail(email);
+        user.setPhone(phone);
+        user.setStatus(status);
+        user.setRole(role);
+        user.setRegistrationDate(registrationDate);
     }
+    
     public static void deleteById(String id){
            for(User user : users){
                 if(user.getId() == id){
