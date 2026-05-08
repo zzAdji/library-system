@@ -1,45 +1,49 @@
 package com.library;
 
-import com.library.config.AppConfig;
+import com.library.repository.impl.JsonBookRepository;
+import com.library.repository.impl.JsonUserRepository;
+import com.library.repository.impl.JsonLoanRepository;
+import com.library.service.AuthService;
 import com.library.service.BookService;
+import com.library.service.LoanService;
+import com.library.service.StatisticsService;
+import com.library.service.UserService;
+import com.library.ui.console.AuthConsole;
 import com.library.ui.console.BookConsole;
+import com.library.ui.console.LoanConsole;
+import com.library.ui.console.MainMenu;
+import com.library.ui.console.StatisticsConsole;
+import com.library.ui.console.UserConsole;
 
 import java.util.Scanner;
 
 public class Main {
 
     public static void main(String[] args) {
-        System.out.println("╔════════════════════════════════════════╗");
-        System.out.println("║   SYSTÈME DE GESTION DE BIBLIOTHÈQUE   ║");
-        System.out.println("╚════════════════════════════════════════╝");
 
         Scanner scanner = new Scanner(System.in);
-        BookService bookService = AppConfig.bookService();
-        BookConsole bookConsole = new BookConsole(bookService, scanner);
 
-        boolean running = true;
-        while (running) {
-            System.out.println();
-            System.out.println("╔══════════════════════════════════════╗");
-            System.out.println("║           MENU PRINCIPAL             ║");
-            System.out.println("╠══════════════════════════════════════╣");
-            System.out.println("║  1. Gestion des livres               ║");
-            System.out.println("║  2. Gestion des utilisateurs         ║");
-            System.out.println("║  3. Gestion des emprunts             ║");
-            System.out.println("║  4. Statistiques                     ║");
-            System.out.println("║  0. Quitter                          ║");
-            System.out.println("╚══════════════════════════════════════╝");
-            System.out.print("Votre choix : ");
+        // Repositories
+        JsonUserRepository userRepository = new JsonUserRepository();
+        JsonBookRepository bookRepository = new JsonBookRepository();
+        JsonLoanRepository loanRepository = new JsonLoanRepository();
 
-            switch (scanner.nextLine().trim()) {
-                case "1" -> bookConsole.showBookMenu();
-                case "2" -> System.out.println("  [Module utilisateurs — en cours]");
-                case "3" -> System.out.println("  [Module emprunts — en cours]");
-                case "4" -> System.out.println("  [Module statistiques — en cours]");
-                case "0" -> { System.out.println("  Au revoir !"); running = false; }
-                default  -> System.out.println("  ❌ Choix invalide.");
-            }
-        }
-        scanner.close();
+        // Services
+        AuthService      authService      = new AuthService(userRepository);
+        BookService      bookService      = new BookService(bookRepository);
+        UserService      userService      = new UserService(userRepository);
+        LoanService      loanService      = new LoanService(userRepository, bookRepository, loanRepository);
+        StatisticsService statisticsService = new StatisticsService(bookRepository, loanRepository);
+
+        // Consoles UI
+        AuthConsole       authConsole       = new AuthConsole(authService, scanner);
+        BookConsole       bookConsole       = new BookConsole(bookService, scanner);
+        UserConsole       userConsole       = new UserConsole(userService, scanner);
+        LoanConsole       loanConsole       = new LoanConsole(loanService);
+        StatisticsConsole statisticsConsole = new StatisticsConsole(statisticsService);
+
+        // Lancement
+        MainMenu mainMenu = new MainMenu(authConsole, bookConsole, userConsole, loanConsole, statisticsConsole);
+        mainMenu.start();
     }
 }

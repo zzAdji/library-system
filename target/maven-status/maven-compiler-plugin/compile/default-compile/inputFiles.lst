@@ -2,6 +2,7 @@ C:\Users\Steve_Jorel\Desktop\library-system\src\main\java\com\library\config\App
 C:\Users\Steve_Jorel\Desktop\library-system\src\main\java\com\library\config\JsonConfig.java
 C:\Users\Steve_Jorel\Desktop\library-system\src\main\java\com\library\config\package-info.java
 C:\Users\Steve_Jorel\Desktop\library-system\src\main\java\com\library\Main.java
+C:\Users\Steve_Jorel\Desktop\library-system\src\main\java\com\library\Maine.java
 C:\Users\Steve_Jorel\Desktop\library-system\src\main\java\com\library\model\Book.java
 C:\Users\Steve_Jorel\Desktop\library-system\src\main\java\com\library\model\HoldRequest.java
 C:\Users\Steve_Jorel\Desktop\library-system\src\main\java\com\library\model\HoldStatus.java
@@ -15,6 +16,8 @@ C:\Users\Steve_Jorel\Desktop\library-system\src\main\java\com\library\repository
 C:\Users\Steve_Jorel\Desktop\library-system\src\main\java\com\library\repository\HoldRequestRepository.java
 C:\Users\Steve_Jorel\Desktop\library-system\src\main\java\com\library\repository\impl\JsonBookRepository.java
 C:\Users\Steve_Jorel\Desktop\library-system\src\main\java\com\library\repository\impl\JsonHoldRequestRepository.java
+C:\Users\Steve_Jorel\Desktop\library-system\src\main\java\com\library\repository\impl\JsonLoanRepository.java
+C:\Users\Steve_Jorel\Desktop\library-system\src\main\java\com\library\repository\impl\JsonUserRepository.java
 C:\Users\Steve_Jorel\Desktop\library-system\src\main\java\com\library\repository\LoanRepository.java
 C:\Users\Steve_Jorel\Desktop\library-system\src\main\java\com\library\repository\package-info.java
 C:\Users\Steve_Jorel\Desktop\library-system\src\main\java\com\library\repository\UserRepository.java
@@ -24,6 +27,14 @@ C:\Users\Steve_Jorel\Desktop\library-system\src\main\java\com\library\service\Lo
 C:\Users\Steve_Jorel\Desktop\library-system\src\main\java\com\library\service\package-info.java
 C:\Users\Steve_Jorel\Desktop\library-system\src\main\java\com\library\service\StatisticsService.java
 C:\Users\Steve_Jorel\Desktop\library-system\src\main\java\com\library\service\UserService.java
+C:\Users\Steve_Jorel\Desktop\library-system\src\main\java\com\library\ui\console\AuthConsole.java
 C:\Users\Steve_Jorel\Desktop\library-system\src\main\java\com\library\ui\console\BookConsole.java
+C:\Users\Steve_Jorel\Desktop\library-system\src\main\java\com\library\ui\console\LoanConsole.java
+C:\Users\Steve_Jorel\Desktop\library-system\src\main\java\com\library\ui\console\MainMenu.java
 C:\Users\Steve_Jorel\Desktop\library-system\src\main\java\com\library\ui\console\package-info.java
+C:\Users\Steve_Jorel\Desktop\library-system\src\main\java\com\library\ui\console\StatisticsConsole.java
+C:\Users\Steve_Jorel\Desktop\library-system\src\main\java\com\library\ui\console\UserConsole.java
 C:\Users\Steve_Jorel\Desktop\library-system\src\main\java\com\library\ui\gui\package-info.java
+C:\Users\Steve_Jorel\Desktop\library-system\src\main\java\com\library\util\ConsoleUtils.java
+C:\Users\Steve_Jorel\Desktop\library-system\src\main\java\com\library\util\DateUtils.java
+C:\Users\Steve_Jorel\Desktop\library-system\src\main\java\com\library\util\PasswordUtils.java
