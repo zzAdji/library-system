@@ -1,7 +1,6 @@
 com\library\model\HoldRequest.class
 com\library\ui\console\BookConsole.class
 com\library\ui\console\UserConsole.class
-com\library\Maine.class
 com\library\repository\impl\JsonLoanRepository$1.class
 com\library\model\UserStatus.class
 com\library\ui\console\StatisticsConsole.class
