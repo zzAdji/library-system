@@ -72,7 +72,9 @@ public class JsonLoanRepository implements LoanRepository {
 
     @Override
     public List<Loan> findOverdueLoans() {
-        return loadData().stream().filter(l -> l.getStatus() == LoanStatus.OVERDUE).collect(Collectors.toList());
+        return loadData().stream()
+                .filter(l -> l.getStatus() == LoanStatus.OVERDUE)
+                .collect(Collectors.toList());
     }
 
     @Override
