@@ -4,9 +4,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.time.LocalDate;
 
 import com.library.model.Book;
 import com.library.model.Loan;
+import com.library.model.LoanStatus;
 import com.library.repository.BookRepository;
 import com.library.repository.LoanRepository;
 
@@ -58,6 +60,10 @@ public class StatisticsService {
     }
 
     public List<Loan> overdueLoans() {
-        return loanRepository.findOverdueLoans();
+        LocalDate today = LocalDate.now();
+        return loanRepository.findAll().stream()
+            .filter(loan -> loan.getStatus() != LoanStatus.RETURNED)
+            .filter(loan -> loan.getDueDate() != null && loan.getDueDate().isBefore(today))
+            .collect(Collectors.toList());
     }
 }

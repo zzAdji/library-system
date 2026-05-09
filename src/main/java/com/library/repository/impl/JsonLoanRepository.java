@@ -11,12 +11,14 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 public class JsonLoanRepository implements LoanRepository {
 
-    private static final String FILE_PATH = "data/loans.json";
+    private static final String FILE_PATH = "src/main/resources/data/loans.json";
     private final ObjectMapper mapper = JsonConfig.getObjectMapper();
 
     private List<Loan> loadData() {
@@ -25,7 +27,18 @@ public class JsonLoanRepository implements LoanRepository {
             return new ArrayList<>();
         }
         try {
-            return mapper.readValue(file, new TypeReference<List<Loan>>() {});
+            List<Loan> loans = mapper.readValue(file, new TypeReference<List<Loan>>() {});
+            boolean hasChanges = false;
+            for (Loan loan : loans) {
+                if (loan.getId() == null || loan.getId().isBlank()) {
+                    loan.setId(UUID.randomUUID().toString());
+                    hasChanges = true;
+                }
+            }
+            if (hasChanges) {
+                writeData(loans);
+            }
+            return loans;
         } catch (IOException e) {
             e.printStackTrace();
             return new ArrayList<>();
@@ -49,16 +62,12 @@ public class JsonLoanRepository implements LoanRepository {
 
     @Override
     public Optional<Loan> findById(String id) {
-        return loadData().stream()
-                .filter(l -> l.getId().equals(id))
-                .findFirst();
+        return loadData().stream().filter(l -> Objects.equals(l.getId(), id)).findFirst();
     }
 
     @Override
     public List<Loan> findByUserId(String userId) {
-        return loadData().stream()
-                .filter(l -> l.getUserId().equals(userId))
-                .collect(Collectors.toList());
+        return loadData().stream().filter(l -> Objects.equals(l.getUserId(), userId)).collect(Collectors.toList());
     }
 
     @Override
@@ -71,7 +80,10 @@ public class JsonLoanRepository implements LoanRepository {
     @Override
     public void save(Loan loan) {
         List<Loan> loans = loadData();
-        loans.removeIf(l -> l.getId().equals(loan.getId()));
+        if (loan.getId() == null || loan.getId().isBlank()) {
+            loan.setId(UUID.randomUUID().toString());
+        }
+        loans.removeIf(l -> Objects.equals(l.getId(), loan.getId()));
         loans.add(loan);
         writeData(loans);
     }
@@ -84,7 +96,7 @@ public class JsonLoanRepository implements LoanRepository {
     @Override
     public void deleteById(String id) {
         List<Loan> loans = loadData();
-        loans.removeIf(l -> l.getId().equals(id));
+        loans.removeIf(l -> Objects.equals(l.getId(), id));
         writeData(loans);
     }
 }

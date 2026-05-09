@@ -40,8 +40,26 @@ public class UserService {
         }
     }
 
+    public void reactivateUser(String userId) {
+        Optional<User> optionalUser = findById(userId);
+
+        if (optionalUser.isPresent()) {
+            User user = optionalUser.get();
+            user.setStatus(UserStatus.ACTIVE);
+            updateUser(user);
+        }
+    }
+
     public Optional<User> findById(String userId) {
         return userRepository.findById(userId);
+    }
+
+    public Optional<User> findByCardNumber(String cardNumber) {
+        return userRepository.findByCardNumber(cardNumber);
+    }
+
+    public Optional<User> findByEmail(String email) {
+        return userRepository.findByEmail(email);
     }
 
     public List<User> getAllUsers() {

@@ -6,5 +6,41 @@
   "publishYear" : 2013,
   "category" : "",
   "totalCopies" : 25,
-  "availableCopies" : 25
+  "availableCopies" : 24
+}, {
+  "isbn" : "ztz",
+  "title" : "test",
+  "author" : "jjjj",
+  "publisher" : "oaekr",
+  "publishYear" : 2023,
+  "category" : "vie",
+  "totalCopies" : 23,
+  "availableCopies" : 21
+}, {
+  "isbn" : "aaa",
+  "title" : "Vibe",
+  "author" : "alim",
+  "publisher" : "",
+  "publishYear" : 2003,
+  "category" : "vr",
+  "totalCopies" : 34,
+  "availableCopies" : 31
+}, {
+  "isbn" : "test",
+  "title" : "rf",
+  "author" : "ze",
+  "publisher" : "erh",
+  "publishYear" : 2000,
+  "category" : "euher",
+  "totalCopies" : 23,
+  "availableCopies" : 22
+}, {
+  "isbn" : "0007",
+  "title" : "Madame Borary",
+  "author" : "Gustave Flaubert",
+  "publisher" : "Michel Levy",
+  "publishYear" : 1875,
+  "category" : "Satire",
+  "totalCopies" : 120,
+  "availableCopies" : 119
 } ]

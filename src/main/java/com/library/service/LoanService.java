@@ -11,6 +11,7 @@ import com.library.repository.UserRepository;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 // Les services d'emprunts
 
@@ -42,7 +43,7 @@ public class LoanService {
             throw new IllegalArgumentException("Livre non disponible");
         }
 
-        Loan loan = new Loan(null, userId, isbn, LocalDate.now(), LocalDate.now().plusDays(14), null, LoanStatus.ONGOING, 0);
+        Loan loan = new Loan(UUID.randomUUID().toString(), userId, isbn, LocalDate.now(), LocalDate.now().plusDays(14), null, LoanStatus.ONGOING, 0);
         book.setAvailableCopies(book.getAvailableCopies() - 1);
         bookRepository.update(book);
         loanRepository.save(loan);
@@ -96,5 +97,9 @@ public class LoanService {
         activeLoans.removeIf(loan -> !loan.getStatus().equals(LoanStatus.ONGOING));
 
         return activeLoans;
+    }
+
+    public List<Loan> getAllLoans() {
+        return loanRepository.findAll();
     }
 }

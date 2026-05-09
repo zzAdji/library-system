@@ -14,7 +14,7 @@ import java.util.Optional;
 
 public class JsonUserRepository implements UserRepository {
 
-    private static final String FILE_PATH = "data/users.json";
+    private static final String FILE_PATH = "src/main/resources/data/users.json";
     private final ObjectMapper mapper = JsonConfig.getObjectMapper();
 
     private List<User> loadData() {

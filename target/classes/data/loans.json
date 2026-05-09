@@ -1,1 +1,37 @@
-[]
+[ {
+  "id" : "8d034150-8767-4653-bca3-6ce182f204e0",
+  "userId" : "05c801e1-68ac-4efa-adb8-707e12c4cc29",
+  "bookIsbn" : "aaa",
+  "issueDate" : "2026-04-30",
+  "dueDate" : "2026-05-14",
+  "returnDate" : "2026-04-30",
+  "status" : "RETURNED",
+  "renewalsCount" : 0
+}, {
+  "id" : "abc6132c-2c0a-49fe-8574-919e6df8778f",
+  "userId" : "b4aee341-c228-4220-844a-e2eaf439cbc0",
+  "bookIsbn" : "test",
+  "issueDate" : "2026-04-30",
+  "dueDate" : "2026-05-14",
+  "returnDate" : "2026-04-30",
+  "status" : "RETURNED",
+  "renewalsCount" : 0
+}, {
+  "id" : "98938c96-5fee-4b7d-a692-4e6f08da6f0b",
+  "userId" : "a2474126-e535-4fe2-8b42-05e49342b444",
+  "bookIsbn" : "test",
+  "issueDate" : "2026-04-30",
+  "dueDate" : "2026-05-14",
+  "returnDate" : null,
+  "status" : "ONGOING",
+  "renewalsCount" : 0
+}, {
+  "id" : "0a730390-21d2-4757-aa53-c8e3ac5eb94b",
+  "userId" : "a2474126-e535-4fe2-8b42-05e49342b444",
+  "bookIsbn" : "ztz",
+  "issueDate" : "2026-04-30",
+  "dueDate" : "2026-05-16",
+  "returnDate" : "2026-04-30",
+  "status" : "RETURNED",
+  "renewalsCount" : 1
+} ]
