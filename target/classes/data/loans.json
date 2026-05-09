@@ -17,15 +17,6 @@
   "status" : "RETURNED",
   "renewalsCount" : 0
 }, {
-  "id" : "98938c96-5fee-4b7d-a692-4e6f08da6f0b",
-  "userId" : "a2474126-e535-4fe2-8b42-05e49342b444",
-  "bookIsbn" : "test",
-  "issueDate" : "2026-04-30",
-  "dueDate" : "2026-05-14",
-  "returnDate" : null,
-  "status" : "ONGOING",
-  "renewalsCount" : 0
-}, {
   "id" : "0a730390-21d2-4757-aa53-c8e3ac5eb94b",
   "userId" : "a2474126-e535-4fe2-8b42-05e49342b444",
   "bookIsbn" : "ztz",
@@ -34,4 +25,22 @@
   "returnDate" : "2026-04-30",
   "status" : "RETURNED",
   "renewalsCount" : 1
+}, {
+  "id" : "98938c96-5fee-4b7d-a692-4e6f08da6f0b",
+  "userId" : "a2474126-e535-4fe2-8b42-05e49342b444",
+  "bookIsbn" : "test",
+  "issueDate" : "2026-04-30",
+  "dueDate" : "2026-06-02",
+  "returnDate" : null,
+  "status" : "ONGOING",
+  "renewalsCount" : 1
+}, {
+  "id" : "b9340a4b-df2a-4a35-bc45-94547cbedb8e",
+  "userId" : "a2474126-e535-4fe2-8b42-05e49342b444",
+  "bookIsbn" : "0007",
+  "issueDate" : "2026-05-09",
+  "dueDate" : "2026-05-23",
+  "returnDate" : null,
+  "status" : "ONGOING",
+  "renewalsCount" : 0
 } ]

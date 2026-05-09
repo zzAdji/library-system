@@ -13,6 +13,6 @@ public interface UserRepository {
     Optional<User> findByCardNumber(String cardNumber);
     Optional<User> findByEmail(String email);
     void save(User user);
-    void update(User user ,String id, String cardNumber, String password, String firstName, String lastName, String email, String phone, Role role, UserStatus status, LocalDate registrationDate)
+    void update(User user);
     void deleteById(String id);
 }
