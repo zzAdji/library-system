@@ -88,4 +88,9 @@ public class BookService {
         if (book.getPublishYear() < 1000 || book.getPublishYear() > 2100)
             throw new IllegalArgumentException("L'année doit être entre 1000 et 2100.");
     }
+
+
+    public List<Book> findByCategory(String category) {
+        return bookRepository.findByCategory(category);
+    }
 }

@@ -2,6 +2,7 @@ package com.library.service;
 
 import com.library.model.User;
 import com.library.repository.UserRepository;
+import com.library.util.PasswordUtils;
 
 import java.util.Optional;
 
@@ -22,7 +23,7 @@ public class AuthService {
         if (optionalUser.isPresent()) {
             User user = optionalUser.get();
         
-            if (user.getPassword().equals(password)) {
+            if (PasswordUtils.verify(password, user.getPassword())) {
                 this.currentUser = user;
             
                 return Optional.of(user); 

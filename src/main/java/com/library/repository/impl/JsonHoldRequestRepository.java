@@ -15,7 +15,7 @@ import java.util.stream.Collectors;
 
 public class JsonHoldRequestRepository implements HoldRequestRepository {
 
-    private static final String FILE_PATH = "data/holdrequests.json";
+    private static final String FILE_PATH = "src/main/resources/data/holdrequests.json";
     private final ObjectMapper mapper = JsonConfig.getObjectMapper();
 
     private List<HoldRequest> loadData() {

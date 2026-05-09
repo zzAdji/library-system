@@ -1,33 +1,23 @@
 package com.library.ui.console;
 
-import java.util.Scanner;
+import com.library.config.FeatureFlags;
+import com.library.model.Role;
+import com.library.model.User;
+import com.library.service.AuthService;
+import com.library.util.ConsoleUtils;
+import java.util.ArrayList;
+import java.util.List;
 
 public class MainMenu {
 
-    private final Scanner scanner;
-    private final AuthConsole authConsole;
+    private final AuthService authService;
     private final BookConsole bookConsole;
     private final UserConsole userConsole;
     private final LoanConsole loanConsole;
     private final StatisticsConsole statisticsConsole;
 
-    // Codes ANSI pour la couleur
-    private static final String RESET = "\u001B[0m";
-    private static final String BOLD = "\u001B[1m";
-    private static final String CYAN = "\u001B[36m";
-    private static final String GREEN = "\u001B[32m";
-    private static final String YELLOW = "\u001B[33m";
-    private static final String RED = "\u001B[31m";
-    private static final String BLUE = "\u001B[34m";
-
-    public MainMenu(AuthConsole authConsole,
-                    BookConsole bookConsole,
-                    UserConsole userConsole,
-                    LoanConsole loanConsole,
-                    StatisticsConsole statisticsConsole) {
-
-        this.scanner = new Scanner(System.in);
-        this.authConsole = authConsole;
+    public MainMenu(AuthService authService, BookConsole bookConsole, UserConsole userConsole, LoanConsole loanConsole, StatisticsConsole statisticsConsole) {
+        this.authService = authService;
         this.bookConsole = bookConsole;
         this.userConsole = userConsole;
         this.loanConsole = loanConsole;
@@ -36,63 +26,75 @@ public class MainMenu {
 
     public void start() {
         while (true) {
-            clearConsole();
-            printMenu();
+            User currentUser = authService.getCurrentUser().orElse(null);
+            if (currentUser == null) {
+                // Par sécurité, si pas d'utilisateur connecté, on retourne à l'écran de connexion
+                return;
+            }
 
-            System.out.print(BOLD + CYAN + " ➤ Choisissez une option : " + RESET);
-            String choice = scanner.nextLine();
+            List<String> options = new ArrayList<>();
+            Role role = currentUser.getRole();
 
-            switch (choice) {
-                case "1":
-                    authConsole.showLoginScreen();
-                    break;
-                case "2":
-                    bookConsole.showBookMenu();
-                    break;
-                case "3":
-                    userConsole.showUserMenu();
-                    break;
-                case "4":
-                    loanConsole.showLoanMenu();
-                    break;
-                case "5":
-                    statisticsConsole.showStatisticsMenu();
-                    break;
-                case "0":
-                    System.out.println(YELLOW + "\n[!] Fermeture du système... Au revoir !" + RESET);
-                    return;
-                default:
-                    System.out.println(RED + "✘ Option invalide. Appuyez sur Entrée pour réessayer." + RESET);
-                    scanner.nextLine();
+            if (!FeatureFlags.FULL_CONSOLE_MODE) {
+                options.add("1:Gestion des livres");
+            } else if (role == Role.ADMIN || role == Role.LIBRARIAN) {
+                options.add("1:Gestion des livres");
+                options.add("2:Gestion des membres");
+                options.add("3:Gestion des emprunts");
+                options.add("4:Statistiques & Rapports");
+            } else {
+                // Utilisateur standard (MEMBER)
+                options.add("1:Rechercher un livre");
+                options.add("2:Mes emprunts");
+            }
+            
+            options.add(" ");
+            options.add("0:Se déconnecter");
+
+            String title = "BIBLIOTHÈQUE - " + currentUser.getFirstName().toUpperCase();
+            String choice = ConsoleUtils.displayMenu(title, options);
+
+            if (!FeatureFlags.FULL_CONSOLE_MODE) {
+                switch (choice) {
+                    case "1" -> bookConsole.showBookMenu();
+                    case "0" -> {
+                        authService.logout();
+                        ConsoleUtils.printSuccessCentered("Déconnexion réussie.");
+                        ConsoleUtils.pause();
+                        return;
+                    }
+                    default -> {
+                        ConsoleUtils.printErrorCentered("Option indisponible en mode limité.");
+                        ConsoleUtils.pause();
+                    }
+                }
+            } else if (role == Role.ADMIN || role == Role.LIBRARIAN) {
+                switch (choice) {
+                    case "1" -> bookConsole.showBookMenu();
+                    case "2" -> userConsole.showUserMenu(role);
+                    case "3" -> loanConsole.showLoanManagementMenu();
+                    case "4" -> statisticsConsole.showStatisticsMenu();
+                    case "0" -> {
+                        authService.logout();
+                        ConsoleUtils.printSuccessCentered("Déconnexion réussie.");
+                        ConsoleUtils.pause();
+                        return; // Retourne à Main (qui reboucle sur AuthConsole)
+                    }
+                    default -> { ConsoleUtils.printErrorCentered("Option invalide."); ConsoleUtils.pause(); }
+                }
+            } else {
+                switch (choice) {
+                    case "1" -> bookConsole.handleSearchBooks();
+                    case "2" -> loanConsole.showMyLoansMenu();
+                    case "0" -> {
+                        authService.logout();
+                        ConsoleUtils.printSuccessCentered("Déconnexion réussie.");
+                        ConsoleUtils.pause();
+                        return;
+                    }
+                    default -> { ConsoleUtils.printErrorCentered("Option invalide."); ConsoleUtils.pause(); }
+                }
             }
         }
-    }
-
-    private void printMenu() {
-        System.out.println(BLUE + "╔════════════════════════════════════════════╗" + RESET);
-        System.out.println(BLUE + "║" + RESET + BOLD + "          GESTION DE BIBLIOTHÈQUE           " + BLUE + "║" + RESET);
-        System.out.println(BLUE + "╠════════════════════════════════════════════╣" + RESET);
-        
-        printOption("1", "Authentification", GREEN);
-        printOption("2", "Gestion des livres", GREEN);
-        printOption("3", "Gestion des utilisateurs", GREEN);
-        printOption("4", "Gestion des emprunts", GREEN);
-        printOption("5", "Statistiques", GREEN);
-        
-        System.out.println(BLUE + "║                                            ║" + RESET);
-        printOption("0", "Quitter le programme", RED);
-        
-        System.out.println(BLUE + "╚════════════════════════════════════════════╝" + RESET);
-    }
-
-    private void printOption(String key, String label, String color) {
-        String line = String.format("  " + color + BOLD + "[%s]" + RESET + " %-34s", key, label);
-        System.out.println(BLUE + "║" + RESET + line + BLUE + "║" + RESET);
-    }
-
-    private void clearConsole() {
-        // Tente d'effacer la console (marche sur la plupart des terminaux modernes)
-        System.out.print("\033[H\033[2J");
-        System.out.flush();
     }
 }

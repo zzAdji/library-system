@@ -1,1 +1,56 @@
-[]
+[ {
+  "id" : "17057cc0-0f33-467b-8b10-f74a28570fff",
+  "cardNumber" : "admin",
+  "password" : "8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918",
+  "firstName" : "Admin",
+  "lastName" : "System",
+  "email" : "admin@library.com",
+  "phone" : "0000000000",
+  "role" : "ADMIN",
+  "status" : "ACTIVE",
+  "registrationDate" : "2026-04-30"
+}, {
+  "id" : "a2474126-e535-4fe2-8b42-05e49342b444",
+  "cardNumber" : "001",
+  "password" : "03ac674216f3e15c761ee1a5e255f067953623c8b388b4459e13f978d7c846f4",
+  "firstName" : "Alim",
+  "lastName" : "adji",
+  "email" : "alim@gmail.com",
+  "phone" : "656496419",
+  "role" : "MEMBER",
+  "status" : "ACTIVE",
+  "registrationDate" : "2026-04-30"
+}, {
+  "id" : "46f56214-ae3f-42f9-8d00-a3e100c65d29",
+  "cardNumber" : "002",
+  "password" : "03ac674216f3e15c761ee1a5e255f067953623c8b388b4459e13f978d7c846f4",
+  "firstName" : "Test",
+  "lastName" : "tess",
+  "email" : "ts@gmail.com",
+  "phone" : "699594566",
+  "role" : "LIBRARIAN",
+  "status" : "ACTIVE",
+  "registrationDate" : "2026-04-30"
+}, {
+  "id" : "b4aee341-c228-4220-844a-e2eaf439cbc0",
+  "cardNumber" : "003",
+  "password" : "03ac674216f3e15c761ee1a5e255f067953623c8b388b4459e13f978d7c846f4",
+  "firstName" : "nini",
+  "lastName" : "fff",
+  "email" : "dfd@fdfd.cm",
+  "phone" : "66623868",
+  "role" : "MEMBER",
+  "status" : "ACTIVE",
+  "registrationDate" : "2026-04-30"
+}, {
+  "id" : "05c801e1-68ac-4efa-adb8-707e12c4cc29",
+  "cardNumber" : "004",
+  "password" : "03ac674216f3e15c761ee1a5e255f067953623c8b388b4459e13f978d7c846f4",
+  "firstName" : "tfr",
+  "lastName" : "fef",
+  "email" : "gij",
+  "phone" : "6668684",
+  "role" : "MEMBER",
+  "status" : "ACTIVE",
+  "registrationDate" : "2026-04-30"
+} ]

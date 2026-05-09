@@ -1,224 +1,291 @@
 package com.library.ui.console;
 
+import com.library.config.FeatureFlags;
 import com.library.model.Book;
+import com.library.model.Role;
+import com.library.model.User;
+import com.library.service.AuthService;
 import com.library.service.BookService;
+import com.library.service.LoanService;
+import com.library.util.ConsoleUtils;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
-import java.util.Scanner;
 
 public class BookConsole {
 
     private final BookService bookService;
-    private final Scanner scanner;
+    private final AuthService authService;
+    private final LoanService loanService;
 
-    public BookConsole(BookService bookService, Scanner scanner) {
+    public BookConsole(BookService bookService, AuthService authService, LoanService loanService) {
         this.bookService = bookService;
-        this.scanner = scanner;
+        this.authService = authService;
+        this.loanService = loanService;
     }
 
     public void showBookMenu() {
-        boolean retour = false;
-        while (!retour) {
-            System.out.println();
-            System.out.println("╔══════════════════════════════════╗");
-            System.out.println("║       GESTION DES LIVRES         ║");
-            System.out.println("╠══════════════════════════════════╣");
-            System.out.println("║  1. Ajouter un livre             ║");
-            System.out.println("║  2. Modifier un livre            ║");
-            System.out.println("║  3. Supprimer un livre           ║");
-            System.out.println("║  4. Rechercher un livre          ║");
-            System.out.println("║  5. Afficher tous les livres     ║");
-            System.out.println("║  6. Détail d'un livre (ISBN)     ║");
-            System.out.println("║  0. Retour au menu principal     ║");
-            System.out.println("╚══════════════════════════════════╝");
-            System.out.print("Votre choix : ");
+        while (true) {
+            List<String> options = Arrays.asList(
+                "1:Ajouter un livre",
+                "2:Modifier un livre",
+                "3:Supprimer un livre",
+                "4:Rechercher un livre",
+                "5:Catalogue complet",
+                "6:Détails d'un livre",
+                " ",
+                "0:Retour au menu principal"
+            );
 
-            String choix = scanner.nextLine().trim();
-            switch (choix) {
+            String choice = ConsoleUtils.displayMenu("GESTION DES LIVRES", options);
+            switch (choice) {
                 case "1" -> handleAddBook();
                 case "2" -> handleUpdateBook();
                 case "3" -> handleDeleteBook();
                 case "4" -> handleSearchBooks();
                 case "5" -> listBooks();
                 case "6" -> handleFindByIsbn();
-                case "0" -> retour = true;
-                default  -> System.out.println("  ❌ Choix invalide.");
+                case "0" -> { return; }
+                default  -> {
+                    ConsoleUtils.printErrorCentered("Choix invalide.");
+                    ConsoleUtils.pause();
+                }
             }
         }
     }
 
     public void handleAddBook() {
-        System.out.println("\n── Ajouter un livre ──");
+        ConsoleUtils.printPageHeader("Ajouter un nouveau livre");
         try {
-            String isbn      = lireChamp("ISBN");
-            String title     = lireChamp("Titre");
-            String author    = lireChamp("Auteur");
-            String publisher = lireChampOptional("Éditeur (optionnel)");
-            int    year      = lireEntier("Année de publication");
-            String category  = lireChampOptional("Catégorie (optionnel)");
-            int    total     = lireEntierPositif("Nombre total d'exemplaires");
+            String isbn      = ConsoleUtils.readNonEmptyStringCentered("ISBN");
+            String title     = ConsoleUtils.readNonEmptyStringCentered("Titre");
+            String author    = ConsoleUtils.readNonEmptyStringCentered("Auteur");
+            String publisher = ConsoleUtils.readLineCentered("Éditeur (optionnel)");
+            int    year      = ConsoleUtils.readIntCentered("Année de publication");
+            String category  = ConsoleUtils.readLineCentered("Catégorie (optionnel)");
+            int    total     = lireEntierPositif("Nombre d'exemplaires");
 
             Book book = new Book(isbn, title, author, publisher, year, category, total, total);
             bookService.addBook(book);
-            System.out.println("  ✅ Livre ajouté : " + title);
+            System.out.println();
+            ConsoleUtils.printSuccessCentered("Livre ajouté : " + title);
         } catch (IllegalArgumentException e) {
-            System.out.println("  ❌ Erreur : " + e.getMessage());
+            System.out.println();
+            ConsoleUtils.printErrorCentered(e.getMessage());
         }
+        ConsoleUtils.pause();
     }
 
     public void handleUpdateBook() {
-        System.out.println("\n── Modifier un livre ──");
+        ConsoleUtils.printPageHeader("Modifier un livre");
         try {
-            String isbn = lireChamp("ISBN du livre à modifier");
+            String isbn = ConsoleUtils.readNonEmptyStringCentered("ISBN du livre à modifier");
             Optional<Book> existant = bookService.findByIsbn(isbn);
             if (existant.isEmpty()) {
-                System.out.println("  ❌ Aucun livre trouvé avec l'ISBN : " + isbn);
-                return;
+                System.out.println();
+                ConsoleUtils.printErrorCentered("Aucun livre trouvé avec l'ISBN : " + isbn);
+            } else {
+                Book actuel = existant.get();
+                System.out.println("\n  Modification de : " + ConsoleUtils.CYAN + actuel.getTitle() + ConsoleUtils.RESET);
+                System.out.println("  (Laissez vide pour conserver la valeur actuelle)\n");
+
+                String title     = lireChampOuGarder("Titre",    actuel.getTitle());
+                String author    = lireChampOuGarder("Auteur",   actuel.getAuthor());
+                String publisher = lireChampOuGarder("Éditeur",  actuel.getPublisher() != null ? actuel.getPublisher() : "");
+                int    year      = lireEntierOuGarder("Année",   actuel.getPublishYear());
+                String category  = lireChampOuGarder("Catégorie", actuel.getCategory() != null ? actuel.getCategory() : "");
+                int    total     = lireEntierPositifOuGarder("Nb exemplaires", actuel.getTotalCopies());
+
+                Book modifie = new Book(isbn, title, author, publisher, year, category, total, actuel.getAvailableCopies());
+                bookService.updateBook(modifie);
+                System.out.println();
+                ConsoleUtils.printSuccessCentered("Livre mis à jour avec succès.");
             }
-            Book actuel = existant.get();
-            System.out.println("  Livre actuel : " + actuel.getTitle() + " — " + actuel.getAuthor());
-            System.out.println("  (Entrée = conserver la valeur actuelle)");
-
-            String title     = lireChampOuGarder("Titre",    actuel.getTitle());
-            String author    = lireChampOuGarder("Auteur",   actuel.getAuthor());
-            String publisher = lireChampOuGarder("Éditeur",  actuel.getPublisher() != null ? actuel.getPublisher() : "");
-            int    year      = lireEntierOuGarder("Année",   actuel.getPublishYear());
-            String category  = lireChampOuGarder("Catégorie", actuel.getCategory() != null ? actuel.getCategory() : "");
-            int    total     = lireEntierPositifOuGarder("Nb exemplaires", actuel.getTotalCopies());
-
-            Book modifie = new Book(isbn, title, author, publisher, year, category, total, actuel.getAvailableCopies());
-            bookService.updateBook(modifie);
-            System.out.println("  ✅ Livre modifié avec succès.");
         } catch (IllegalArgumentException | IllegalStateException e) {
-            System.out.println("  ❌ Erreur : " + e.getMessage());
+            System.out.println();
+            ConsoleUtils.printErrorCentered(e.getMessage());
         }
+        ConsoleUtils.pause();
     }
 
     public void handleDeleteBook() {
-        System.out.println("\n── Supprimer un livre ──");
+        ConsoleUtils.printPageHeader("Supprimer un livre");
         try {
-            String isbn = lireChamp("ISBN du livre à supprimer");
+            String isbn = ConsoleUtils.readNonEmptyStringCentered("ISBN du livre à supprimer");
             Optional<Book> livre = bookService.findByIsbn(isbn);
             if (livre.isEmpty()) {
-                System.out.println("  ❌ Aucun livre trouvé avec l'ISBN : " + isbn);
-                return;
-            }
-            System.out.println("  Livre trouvé : " + livre.get().getTitle());
-            System.out.print("  Confirmer la suppression ? (o/N) : ");
-            if (scanner.nextLine().trim().equalsIgnoreCase("o")) {
-                bookService.deleteBook(isbn);
-                System.out.println("  ✅ Livre supprimé.");
+                System.out.println();
+                ConsoleUtils.printErrorCentered("Aucun livre trouvé.");
             } else {
-                System.out.println("  ↩ Suppression annulée.");
+                System.out.println("\n  Confirmez-vous la suppression de : " + ConsoleUtils.BOLD + livre.get().getTitle() + ConsoleUtils.RESET);
+                String confirm = ConsoleUtils.readLineCentered("Confirmer (o/N)");
+                if (confirm.equalsIgnoreCase("o")) {
+                    bookService.deleteBook(isbn);
+                    System.out.println();
+                    ConsoleUtils.printSuccessCentered("Le livre a été supprimé.");
+                } else {
+                    System.out.println();
+                    ConsoleUtils.printErrorCentered("Opération annulée.");
+                }
             }
-        } catch (IllegalArgumentException | IllegalStateException e) {
-            System.out.println("  ❌ Erreur : " + e.getMessage());
+        } catch (Exception e) {
+            System.out.println();
+            ConsoleUtils.printErrorCentered(e.getMessage());
         }
+        ConsoleUtils.pause();
     }
 
     public void handleSearchBooks() {
-        System.out.println("\n── Rechercher un livre ──");
-        System.out.print("  Mot-clé (titre, auteur, catégorie, ISBN) : ");
-        String keyword = scanner.nextLine().trim();
+        ConsoleUtils.printPageHeader("Rechercher dans le catalogue");
+        String keyword = ConsoleUtils.readLineCentered("Mot-clé");
         List<Book> resultats = bookService.search(keyword);
+        System.out.println();
         if (resultats.isEmpty()) {
-            System.out.println("  Aucun résultat pour : \"" + keyword + "\"");
+            ConsoleUtils.printErrorCentered("Aucun résultat trouvé pour : " + keyword);
         } else {
-            System.out.println("  " + resultats.size() + " résultat(s) :");
+            System.out.println("  " + resultats.size() + " livre(s) trouvé(s) :");
             afficherListe(resultats);
+            
+            if (isMemberConnected()) {
+                // Proposition d'emprunt reservee aux membres
+                System.out.println();
+                String isbnToBorrow = ConsoleUtils.readLineCentered("Entrez l'ISBN du livre à emprunter (ou laissez vide pour annuler)");
+                if (!isbnToBorrow.isEmpty()) {
+                    Optional<Book> bookOpt = bookService.findByIsbn(isbnToBorrow);
+                    if (bookOpt.isPresent()) {
+                        Book book = bookOpt.get();
+                        if (book.getAvailableCopies() > 0) {
+                            tryBorrowBook(book);
+                        } else {
+                            System.out.println();
+                            ConsoleUtils.printErrorCentered("Ce livre n'est plus disponible.");
+                        }
+                    } else {
+                        System.out.println();
+                        ConsoleUtils.printErrorCentered("ISBN introuvable dans cette liste.");
+                    }
+                }
+            }
         }
+        ConsoleUtils.pause();
     }
 
     public void listBooks() {
-        System.out.println("\n── Catalogue complet ──");
+        ConsoleUtils.printPageHeader("Catalogue complet");
         List<Book> livres = bookService.getAllBooks();
         if (livres.isEmpty()) {
-            System.out.println("  Aucun livre enregistré.");
+            ConsoleUtils.printErrorCentered("La bibliothèque est vide.");
         } else {
-            System.out.println("  " + livres.size() + " livre(s) :");
             afficherListe(livres);
         }
+        ConsoleUtils.pause();
     }
 
     public void handleFindByIsbn() {
-        System.out.println("\n── Recherche par ISBN ──");
-        String isbn = lireChamp("ISBN");
-        bookService.findByIsbn(isbn).ifPresentOrElse(
-            this::afficherDetail,
-            () -> System.out.println("  ❌ Aucun livre trouvé avec l'ISBN : " + isbn)
-        );
+        ConsoleUtils.printPageHeader("Détails du livre");
+        String isbn = ConsoleUtils.readNonEmptyStringCentered("ISBN");
+        System.out.println();
+        Optional<Book> bookOpt = bookService.findByIsbn(isbn);
+        if (bookOpt.isPresent()) {
+            Book book = bookOpt.get();
+            afficherDetail(book);
+            
+            if (book.getAvailableCopies() > 0) {
+                if (isMemberConnected()) {
+                    System.out.println();
+                    String confirm = ConsoleUtils.readLineCentered("Voulez-vous emprunter ce livre ? (o/N)");
+                    if (confirm.equalsIgnoreCase("o")) {
+                        tryBorrowBook(book);
+                    }
+                } else {
+                    System.out.println();
+                }
+            } else {
+                System.out.println();
+                ConsoleUtils.printErrorCentered("Ce livre est actuellement indisponible ou vous n'êtes pas connecté.");
+            }
+        }
+        ConsoleUtils.pause();
     }
 
-    // ── Affichage ──────────────────────────────────────────────────────────
+    private void tryBorrowBook(Book book) {
+        Optional<User> currentUserOpt = authService.getCurrentUser();
+        if (currentUserOpt.isPresent()) {
+            if (currentUserOpt.get().getRole() != Role.MEMBER) {
+                System.out.println();
+                ConsoleUtils.printErrorCentered("Seuls les membres peuvent emprunter depuis ce menu.");
+                return;
+            }
+            try {
+                loanService.borrowBook(currentUserOpt.get().getId(), book.getIsbn());
+                System.out.println();
+                ConsoleUtils.printSuccessCentered("Emprunt réussi ! Vous avez 14 jours pour le retourner.");
+            } catch (Exception e) {
+                System.out.println();
+                ConsoleUtils.printErrorCentered(e.getMessage());
+            }
+        } else {
+            System.out.println();
+            ConsoleUtils.printErrorCentered("Vous devez être connecté pour emprunter.");
+        }
+    }
+
+    private boolean isMemberConnected() {
+        if (!FeatureFlags.FULL_CONSOLE_MODE) {
+            return false;
+        }
+        return authService.getCurrentUser()
+            .map(user -> user.getRole() == Role.MEMBER)
+            .orElse(false);
+    }
 
     private void afficherListe(List<Book> livres) {
-        System.out.println("  " + "─".repeat(75));
+        System.out.println();
+        String headerFormat = ConsoleUtils.MARGIN + ConsoleUtils.BOLD + " %-15s | %-25s | %-15s | %-10s" + ConsoleUtils.RESET;
+        String rowFormat = ConsoleUtils.MARGIN + " %-15s | %-25s | %-15s | %s";
+        
+        System.out.println(ConsoleUtils.MARGIN + ConsoleUtils.BLUE + " " + "─".repeat(75) + ConsoleUtils.RESET);
+        System.out.printf(headerFormat + "%n", "ISBN", "TITRE", "AUTEUR", "STATUT");
+        System.out.println(ConsoleUtils.MARGIN + ConsoleUtils.BLUE + " " + "─".repeat(75) + ConsoleUtils.RESET);
+        
         for (Book b : livres) {
-            System.out.printf("  [%s] %-28s %-18s (%d) | Dispo: %d/%d%n",
-                b.getIsbn(), tronquer(b.getTitle(), 28),
-                tronquer(b.getAuthor(), 18), b.getPublishYear(),
-                b.getAvailableCopies(), b.getTotalCopies());
+            System.out.printf(rowFormat + "%n", 
+                b.getIsbn(), tronquer(b.getTitle(), 25), tronquer(b.getAuthor(), 15),
+                (b.getAvailableCopies() > 0 ? ConsoleUtils.GREEN + "Disponible" + ConsoleUtils.RESET : ConsoleUtils.RED + "Emprunté  " + ConsoleUtils.RESET));
         }
-        System.out.println("  " + "─".repeat(75));
+        System.out.println(ConsoleUtils.MARGIN + ConsoleUtils.BLUE + " " + "─".repeat(75) + ConsoleUtils.RESET);
     }
 
     private void afficherDetail(Book b) {
-        System.out.println("  ┌─ Détail ───────────────────────────────────");
-        System.out.println("  │ ISBN       : " + b.getIsbn());
-        System.out.println("  │ Titre      : " + b.getTitle());
-        System.out.println("  │ Auteur     : " + b.getAuthor());
-        System.out.println("  │ Éditeur    : " + (b.getPublisher() != null ? b.getPublisher() : "-"));
-        System.out.println("  │ Année      : " + b.getPublishYear());
-        System.out.println("  │ Catégorie  : " + (b.getCategory() != null ? b.getCategory() : "-"));
-        System.out.println("  │ Disponible : " + b.getAvailableCopies() + "/" + b.getTotalCopies()
-            + (b.getAvailableCopies() > 0 ? "  ✅" : "  ❌"));
-        System.out.println("  └────────────────────────────────────────────");
-    }
-
-    // ── Saisie ─────────────────────────────────────────────────────────────
-
-    private String lireChamp(String label) {
-        String v;
-        do {
-            System.out.print("  " + label + " : ");
-            v = scanner.nextLine().trim();
-            if (v.isBlank()) System.out.println("  ⚠ Champ obligatoire.");
-        } while (v.isBlank());
-        return v;
-    }
-
-    private String lireChampOptional(String label) {
-        System.out.print("  " + label + " : ");
-        return scanner.nextLine().trim();
+        System.out.println(ConsoleUtils.MARGIN + "  " + ConsoleUtils.CYAN + ConsoleUtils.BOLD + "DÉTAILS DU LIVRE" + ConsoleUtils.RESET);
+        System.out.println(ConsoleUtils.MARGIN + "  " + ConsoleUtils.BLUE + "─".repeat(40) + ConsoleUtils.RESET);
+        System.out.println(ConsoleUtils.MARGIN + "  ISBN        : " + ConsoleUtils.WHITE + b.getIsbn() + ConsoleUtils.RESET);
+        System.out.println(ConsoleUtils.MARGIN + "  Titre       : " + ConsoleUtils.WHITE + b.getTitle() + ConsoleUtils.RESET);
+        System.out.println(ConsoleUtils.MARGIN + "  Auteur      : " + ConsoleUtils.WHITE + b.getAuthor() + ConsoleUtils.RESET);
+        System.out.println(ConsoleUtils.MARGIN + "  Éditeur     : " + ConsoleUtils.WHITE + (b.getPublisher() == null || b.getPublisher().isEmpty() ? "-" : b.getPublisher()) + ConsoleUtils.RESET);
+        System.out.println(ConsoleUtils.MARGIN + "  Année       : " + ConsoleUtils.WHITE + b.getPublishYear() + ConsoleUtils.RESET);
+        System.out.println(ConsoleUtils.MARGIN + "  Catégorie   : " + ConsoleUtils.WHITE + (b.getCategory() == null || b.getCategory().isEmpty() ? "-" : b.getCategory()) + ConsoleUtils.RESET);
+        System.out.println(ConsoleUtils.MARGIN + "  Stock       : " + ConsoleUtils.WHITE + b.getAvailableCopies() + " / " + b.getTotalCopies() + ConsoleUtils.RESET);
+        System.out.println(ConsoleUtils.MARGIN + "  " + ConsoleUtils.BLUE + "─".repeat(40) + ConsoleUtils.RESET);
     }
 
     private String lireChampOuGarder(String label, String actuel) {
-        System.out.print("  " + label + " [" + actuel + "] : ");
-        String s = scanner.nextLine().trim();
-        return s.isBlank() ? actuel : s;
-    }
-
-    private int lireEntier(String label) {
-        while (true) {
-            System.out.print("  " + label + " : ");
-            try { return Integer.parseInt(scanner.nextLine().trim()); }
-            catch (NumberFormatException e) { System.out.println("  ⚠ Entier requis."); }
-        }
+        String s = ConsoleUtils.readLineCentered(label + " [" + actuel + "]");
+        return s.isEmpty() ? actuel : s;
     }
 
     private int lireEntierPositif(String label) {
         while (true) {
-            int v = lireEntier(label);
+            int v = ConsoleUtils.readIntCentered(label);
             if (v >= 1) return v;
-            System.out.println("  ⚠ La valeur doit être ≥ 1.");
+            ConsoleUtils.printErrorCentered("La valeur doit être supérieure à 0.");
         }
     }
 
     private int lireEntierOuGarder(String label, int actuel) {
-        System.out.print("  " + label + " [" + actuel + "] : ");
-        String s = scanner.nextLine().trim();
-        if (s.isBlank()) return actuel;
+        String s = ConsoleUtils.readLineCentered(label + " [" + actuel + "]");
+        if (s.isEmpty()) return actuel;
         try { return Integer.parseInt(s); }
         catch (NumberFormatException e) { return actuel; }
     }
@@ -227,7 +294,7 @@ public class BookConsole {
         while (true) {
             int v = lireEntierOuGarder(label, actuel);
             if (v >= 1) return v;
-            System.out.println("  ⚠ La valeur doit être ≥ 1.");
+            ConsoleUtils.printErrorCentered("La valeur doit être supérieure à 0.");
         }
     }
 
